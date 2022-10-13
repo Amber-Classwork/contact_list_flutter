@@ -92,6 +92,7 @@ class NetworkHandler {
     }else{
       //  Describe what we should do if there is an error from the server.
       //  Could return a message to the user.
+      print(response.body);
       return "There was an error";
     }
   }
