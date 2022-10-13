@@ -139,7 +139,7 @@ class MainContactsPage extends StatelessWidget {
             height: 200,
             width: double.maxFinite,
             decoration: BoxDecoration(
-              color: AppColors.mainPurple,
+              color: AppColors.mainBlue,
               borderRadius: BorderRadius.only(
                 bottomLeft: (Radius.circular(80)),
                 bottomRight: (Radius.circular(80)),
@@ -168,13 +168,13 @@ class MainContactsPage extends StatelessWidget {
             child: Expanded(
               child: ListView.builder(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  physics: AlwaysScrollableScrollPhysics(),
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: 30,
                   itemBuilder: (context, index) {
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: AppColors.mainPurple,
+                        backgroundColor: AppColors.mainBlue,
                         radius: 20,
                       ),
                       title: Text('John Travolta'),
