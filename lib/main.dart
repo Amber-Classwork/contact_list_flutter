@@ -1,4 +1,5 @@
 import 'package:contact_list_flutter/pages/home/main_contacts_page.dart';
+import 'package:contact_list_flutter/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class RootApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Contacts',
-      home: MainContactsPage(),
+      home: LoginPage(),
     );
   }
 }
