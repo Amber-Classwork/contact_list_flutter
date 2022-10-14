@@ -17,27 +17,28 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String _username = "";
   String _password = "";
+  String _error = "";
 
-  void submitLogin() async {
-    String userData = await NetworkHandler.post(
-        "/users/login", {"username": _username, "password": _password});
-    Map responseData = jsonDecode(userData);
-    Map data = responseData["data"];
-    SecureStore.storeToken("jwt-auth", data["token"]);
-    Map<String, dynamic> mapUser = data["user"];
-    User user = User.fromJson(mapUser);
-    SecureStore.createUser(user);
-    print(user);
-    // User user = User.fromJSON(data["user"]);
-    // SecureStore.createUser(user);
-    
-    print(responseData);
-    if (responseData["status"] == "success") {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => const MainContactsPage()));
+  Future<bool> submitLogin() async {
+    try{
+      String userData = await NetworkHandler.post(
+          "/users/login", {"username": _username, "password": _password});
+      Map responseData = jsonDecode(userData);
+      Map data = responseData["data"];
+      print(responseData["data"]["token"]);
+      SecureStore.storeToken("jwt-auth", data["token"]);
+      Map<String, dynamic> mapUser = data["user"];
+      SecureStore.createUser(mapUser);
+      return true;
+    }catch(error){
+      setState(() {
+        _error = error.toString();
+        print(_error);
+        AlertDialog(title:Text("Error"), content: Text("$_error"));
+      });
+      return false;
     }
+
   }
 
   @override
@@ -52,7 +53,6 @@ class _LoginPageState extends State<LoginPage> {
                 onChanged: (value) {
                   setState(() {
                     _username = value;
-                    print(_username);
                   });
                 },
                 decoration: InputDecoration(
@@ -63,14 +63,17 @@ class _LoginPageState extends State<LoginPage> {
                 onChanged: (value) {
                   setState(() {
                     _password = value;
-                    print(_password);
                   });
                 },
                 decoration: InputDecoration(hintText: "Password"),
               ),
-              OutlinedButton(onPressed: () {
-                submitLogin();
-
+              OutlinedButton(onPressed: () async {
+                if(await submitLogin()) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (
+                          BuildContext context) => const MainContactsPage()));
+                }
               }, child: Text('Sign In'))
             ],
           ),

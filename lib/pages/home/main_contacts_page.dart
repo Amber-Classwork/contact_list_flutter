@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:contact_list_flutter/models/contact.dart';
 import 'package:contact_list_flutter/services/network_handler_service.dart';
 import 'package:contact_list_flutter/utils/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:flutter/material.dart';
 import '../../utils/dimensions.dart';
 
@@ -127,24 +129,32 @@ class MainContactsPage extends StatefulWidget {
 }
 
 class _MainContactsPageState extends State<MainContactsPage> {
-  List<Contact> contactList = [];
+  late Future<List<Contact>> futureContacts;
 
-  void getAllContacts() async {
+  _sendMail() async {
+    // Android and iOS
+    Uri uri = Uri.parse('mailto:test@example.org?subject=Greetings&body=Hello%20World');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
+  }
+
+  Future<List<Contact>> getAllContacts() async {
     var response = await NetworkHandler.get(endpoint: "/contacts");
     Map responseData = jsonDecode(response);
     List contacts = responseData["data"]["contacts"];
     List<Contact> newContactList = contacts.map((contact) {
-      return Contact.fromJSON(contact);
+      return Contact.fromJson(contact);
     }).toList();
-
-    contactList = newContactList;
+    return newContactList;
   }
 
   @override
   void initState() {
     super.initState();
-    getAllContacts();
-    print(contactList);
+    futureContacts = getAllContacts();
   }
 
   @override
@@ -194,30 +204,46 @@ class _MainContactsPageState extends State<MainContactsPage> {
             ),
           ),
           Container(
-            child: Expanded(
-              child: ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: contactList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.mainBlue,
-                        radius: 20,
-                      ),
-                      title: Text(contactList[index].first_name +
-                          " " +
-                          contactList[index].last_name),
-                      subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(contactList[index].email),
-                            Text(contactList[index].phone)
-                          ]),
-                      trailing: Icon(Icons.email),
+            child: FutureBuilder<List<Contact>>(
+              future: futureContacts,
+              builder: (context,snapshot){
+                  if(snapshot.hasData){
+                    return Expanded(
+                      child: ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: AppColors.mainBlue,
+                                radius: 20,
+                              ),
+                              title: Text(snapshot.data![index].first_name +
+                                  " " +
+                                  snapshot.data![index].last_name),
+                              subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(snapshot.data![index].email),
+                                    Text("${snapshot.data![index].contact_num}")
+                                  ]),
+                              trailing: IconButton(
+                                  onPressed: (){
+
+                                  },
+                                  icon: Icon(Icons.email)
+                              ),
+                            );
+                          }),
                     );
-                  }),
+                  }else if(snapshot.hasError){
+                    return Text('${snapshot.error}');
+                  }
+
+                  return const CircularProgressIndicator();
+              },
             ),
           )
         ],
