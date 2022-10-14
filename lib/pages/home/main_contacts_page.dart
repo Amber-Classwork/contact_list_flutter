@@ -89,7 +89,7 @@ class MainContactsPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 0, bottom: 20),
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 1,
+                itemCount: 10,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     dense: true,
@@ -97,7 +97,7 @@ class MainContactsPage extends StatelessWidget {
                     visualDensity: const VisualDensity(vertical: 3),
                     contentPadding: const EdgeInsets.all(0),
                     leading: const CircleAvatar(
-                        radius: 60, backgroundColor: AppColors.mainGreen),
+                        radius: 60, backgroundColor: AppColors.mainBlue),
                     title: const Padding(
                       padding: EdgeInsets.only(bottom: 5.0),
                       child: Text(
@@ -123,8 +123,7 @@ class MainContactsPage extends StatelessWidget {
                           children: const [
                             Icon(
                               Icons.call_outlined,
-                              color: AppColors.mainBlue,
-                              size: 27,
+                              color: Colors.black87,
                             ),
                             SizedBox(
                                 width: 25,
@@ -134,8 +133,7 @@ class MainContactsPage extends StatelessWidget {
                                 )),
                             Icon(
                               Icons.email_outlined,
-                              color: AppColors.mainBlue,
-                              size: 27,
+                              color: Colors.black87,
                             )
                           ],
                         ),
