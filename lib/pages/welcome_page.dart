@@ -1,3 +1,5 @@
+import 'package:contact_list_flutter/pages/login_page.dart';
+import 'package:contact_list_flutter/pages/register_page.dart';
 import 'package:contact_list_flutter/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +56,12 @@ class WelcomePage extends StatelessWidget {
                       minimumSize: Size.fromHeight(45),
                       shape: StadiumBorder(),
                       side: BorderSide(color: Colors.white)),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context)=> LoginPage())
+                    );
+                  },
                   child: Text(
                     'Login',
                     style: TextStyle(fontSize: 18, color: Colors.white),
@@ -68,7 +75,12 @@ class WelcomePage extends StatelessWidget {
                 height: 50,
                 width: 250,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context)=> RegisterPage())
+                    );
+                  },
                   child: Text(
                     'Register',
                     style: TextStyle(fontSize: 18, color: Colors.black),

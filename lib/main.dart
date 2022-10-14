@@ -16,7 +16,7 @@ class RootApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Contacts',
-      home: LoginPage(),
+      home: WelcomePage(),
     );
   }
 }
