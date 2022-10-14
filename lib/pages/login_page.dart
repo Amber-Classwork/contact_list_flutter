@@ -15,22 +15,31 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   String _username = "";
   String _password = "";
 
-  void submitLogin() async{
-    String userData = await NetworkHandler.post("/users/login", {
-      "username": _username,
-      "password": _password
-    });
-    Map data = jsonDecode(userData)["data"];
+  void submitLogin() async {
+    String userData = await NetworkHandler.post(
+        "/users/login", {"username": _username, "password": _password});
+    Map responseData = jsonDecode(userData);
+    Map data = responseData["data"];
     SecureStore.storeToken("jwt-auth", data["token"]);
     Map<String, dynamic> mapUser = data["user"];
     User user = User.fromJson(mapUser);
     SecureStore.createUser(user);
     print(user);
+    // User user = User.fromJSON(data["user"]);
+    // SecureStore.createUser(user);
+    
+    print(responseData);
+    if (responseData["status"] == "success") {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => const MainContactsPage()));
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               TextField(
-                onChanged: (value){
+                onChanged: (value) {
                   setState(() {
                     _username = value;
                     print(_username);
@@ -48,11 +57,10 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 decoration: InputDecoration(
                   hintText: "Username",
-
                 ),
               ),
               TextField(
-                onChanged: (value){
+                onChanged: (value) {
                   setState(() {
                     _password = value;
                     print(_password);

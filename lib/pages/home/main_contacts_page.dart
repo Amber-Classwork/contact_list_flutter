@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:contact_list_flutter/models/contact.dart';
+import 'package:contact_list_flutter/services/network_handler_service.dart';
 import 'package:contact_list_flutter/utils/colors.dart';
 import 'package:flutter/material.dart';
 import '../../utils/dimensions.dart';
@@ -115,8 +119,33 @@ import '../../utils/dimensions.dart';
 //       true;
 // }
 
-class MainContactsPage extends StatelessWidget {
+class MainContactsPage extends StatefulWidget {
   const MainContactsPage({super.key});
+
+  @override
+  State<MainContactsPage> createState() => _MainContactsPageState();
+}
+
+class _MainContactsPageState extends State<MainContactsPage> {
+  List<Contact> contactList = [];
+
+  void getAllContacts() async {
+    var response = await NetworkHandler.get(endpoint: "/contacts");
+    Map responseData = jsonDecode(response);
+    List contacts = responseData["data"]["contacts"];
+    List<Contact> newContactList = contacts.map((contact) {
+      return Contact.fromJSON(contact);
+    }).toList();
+
+    contactList = newContactList;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAllContacts();
+    print(contactList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,19 +199,21 @@ class MainContactsPage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: 30,
+                  itemCount: contactList.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundColor: AppColors.mainBlue,
                         radius: 20,
                       ),
-                      title: Text('John Travolta'),
+                      title: Text(contactList[index].first_name +
+                          " " +
+                          contactList[index].last_name),
                       subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('johntravolta22@gmail.com'),
-                            Text('+ 1 876 56443434')
+                            Text(contactList[index].email),
+                            Text(contactList[index].phone)
                           ]),
                       trailing: Icon(Icons.email),
                     );

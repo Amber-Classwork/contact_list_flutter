@@ -16,5 +16,4 @@ class Contact {
       phone: json['phone'],
     );
   }
-
 }
