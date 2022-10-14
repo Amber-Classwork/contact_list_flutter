@@ -37,8 +37,9 @@ class NetworkHandler {
 
   }
 
-  static Future<String> get({String endpoint = "", Object queryParams = const {}}) async {
+  static Future<String> get({String endpoint = "", Object queryParams = ""}) async {
     token = await getToken("jwt-auth");
+    print(_headers);
 
     var response = await client.get(buildUrl(segment: endpoint), headers: _headers);
     return _handleResponse(response);
@@ -92,7 +93,7 @@ class NetworkHandler {
     }else{
       //  Describe what we should do if there is an error from the server.
       //  Could return a message to the user.
-      throw Exception(jsonDecode(response.body)["error"]);
+      throw Exception(jsonDecode(response.body)["error"]["message"]);
     }
   }
 }

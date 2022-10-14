@@ -15,7 +15,7 @@ class SecureStore{
   }
 
   //Creates a storage entry for the user in the persistent storage created.
-  static void createUser(User userData){
+  static void createUser(Map userData){
     json.encode(userData);
     storeToken("user", jsonEncode(userData));
   }
