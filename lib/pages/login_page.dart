@@ -4,8 +4,8 @@ import 'package:contact_list_flutter/models/user.dart';
 import 'package:contact_list_flutter/services/network_handler_service.dart';
 import 'package:contact_list_flutter/services/secure_store_service.dart';
 import 'package:flutter/material.dart';
-
 import 'home/main_contacts_page.dart';
+import '../utils/colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,12 +15,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+
   String _username = "";
   String _password = "";
   String _error = "";
 
   Future<bool> submitLogin() async {
-    try{
+    try {
       String userData = await NetworkHandler.post(
           "/users/login", {"username": _username, "password": _password});
       Map responseData = jsonDecode(userData);
@@ -30,71 +32,118 @@ class _LoginPageState extends State<LoginPage> {
       Map<String, dynamic> mapUser = data["user"];
       SecureStore.createUser(mapUser);
       return true;
-    }catch(error){
+    } catch (error) {
       setState(() {
         _error = error.toString();
         print(_error);
-        AlertDialog(title:Text("Error"), content: Text("$_error"));
+        AlertDialog(title: Text("Error"), content: Text("$_error"));
       });
       return false;
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          height: 300,
-          child: Column(
-            children: [
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _username = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: "Username",
+      body: Column(
+        children: [
+          ClipPath(
+            clipper: CustomClipPath(),
+            child: Container(
+              color: AppColors.mainBlue,
+              height: 300,
+              width: double.maxFinite,
+              child: Center(
+                child: Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white, fontSize: 40),
                 ),
               ),
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _password = value;
-                  });
-                },
-                decoration: InputDecoration(hintText: "Password"),
-              ),
-              OutlinedButton(onPressed: () async {
-                if(await submitLogin()) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (
-                          BuildContext context) => const MainContactsPage()));
-                }
-              }, child: Text('Sign In'))
-            ],
+            ),
           ),
-        ),
+          Form(
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 350,
+                  child: Form(
+                    child: Column(
+                      children: [
+                        TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _username = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: 'Username',
+                          ),
+                        ),
+                        TextField(
+                          onChanged: (value) {
+                            setState(() {
+                              _password = value;
+                            });
+                          },
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: AppColors.mainBlue,
+                            shape: StadiumBorder()),
+                        onPressed: () async {
+                          if (await submitLogin()) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MainContactsPage()));
+                          }
+                        },
+                        child: Text(
+                          'Login',
+                        ),
+                      ),
+                    ),
+                    Text("Don't have an account?\nRegister")
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
-
-    // Column(
-    //   children: [
-    //     Icon(Icons.call),
-    //     Text('Welcome to the new Contacts App'),
-    //     Text('Designed to keep your contacts safe and secure'),
-    //     TextButton(
-    //       onPressed: () {},
-    //       child: Text('Login'),
-    //     ),
-    //     TextButton(
-    //       onPressed: () {},
-    //       child: Text('Register'),
-    //     )
-    //   ],
-    // );
   }
+}
+
+class CustomClipPath extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    double w = size.width;
+    double h = size.height;
+
+    final path = Path();
+
+    path.lineTo(0, h);
+    path.quadraticBezierTo(w * 0.5, h - 100, w, h);
+    path.lineTo(w, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
