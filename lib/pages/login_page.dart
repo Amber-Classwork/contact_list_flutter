@@ -26,8 +26,10 @@ class _LoginPageState extends State<LoginPage> {
     });
     Map data = jsonDecode(userData)["data"];
     SecureStore.storeToken("jwt-auth", data["token"]);
-    User user = User.fromJSON(data["user"]);
+    Map<String, dynamic> mapUser = data["user"];
+    User user = User.fromJson(mapUser);
     SecureStore.createUser(user);
+    print(user);
   }
   @override
   Widget build(BuildContext context) {
@@ -60,11 +62,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               OutlinedButton(onPressed: () {
                 submitLogin();
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (BuildContext context)=> const MainContactsPage())
-                );
+
               }, child: Text('Sign In'))
             ],
           ),
