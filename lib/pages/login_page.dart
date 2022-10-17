@@ -1,9 +1,11 @@
 import 'dart:convert';
-
+import '../utils/dimensions.dart';
 import 'package:contact_list_flutter/models/user.dart';
 import 'package:contact_list_flutter/services/network_handler_service.dart';
 import 'package:contact_list_flutter/services/secure_store_service.dart';
 import 'package:flutter/material.dart';
+import '../widgets/large_text.dart';
+import '../widgets/small_text.dart';
 import 'home/main_contacts_page.dart';
 import '../utils/colors.dart';
 
@@ -61,44 +63,48 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          Form(
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               children: [
-                SizedBox(
-                  width: 350,
-                  child: Form(
-                    child: Column(
-                      children: [
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              _username = value;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText: 'Username',
-                          ),
+                Form(
+                  child: Column(
+                    children: [
+                      TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _username = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Username',
                         ),
-                        TextField(
-                          onChanged: (value) {
-                            setState(() {
-                              _password = value;
-                            });
-                          },
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                          ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _password = value;
+                          });
+                        },
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+                SizedBox(
+                  height: 30,
+                ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: 150,
+                      width: 125,
                       child: TextButton(
                         style: TextButton.styleFrom(
                             backgroundColor: AppColors.mainBlue,
@@ -112,8 +118,13 @@ class _LoginPageState extends State<LoginPage> {
                                         const MainContactsPage()));
                           }
                         },
-                        child: Text(
-                          'Login',
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: LargeText(
+                            size: 18,
+                            text: 'Login',
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -137,8 +148,8 @@ class CustomClipPath extends CustomClipper<Path> {
 
     final path = Path();
 
-    path.lineTo(0, h * 0.7);
-    path.quadraticBezierTo(w * 0.5, h, w, h * 0.7);
+    path.lineTo(0, h * 0.8);
+    path.quadraticBezierTo(w * 0.5, h, w, h * 0.8);
     path.lineTo(w, 0);
     path.close();
     return path;

@@ -57,10 +57,8 @@ class WelcomePage extends StatelessWidget {
                       shape: StadiumBorder(),
                       side: BorderSide(color: Colors.white)),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context)=> LoginPage())
-                    );
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
                   },
                   child: Text(
                     'Login',
@@ -78,8 +76,8 @@ class WelcomePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context)=> RegisterPage())
-                    );
+                        MaterialPageRoute(
+                            builder: (context) => RegisterPage()));
                   },
                   child: Text(
                     'Register',
