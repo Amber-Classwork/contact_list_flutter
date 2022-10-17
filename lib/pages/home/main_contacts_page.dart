@@ -20,7 +20,7 @@ class MainContactsPage extends StatefulWidget {
 class _MainContactsPageState extends State<MainContactsPage> {
   late Future<List<Contact>> futureContacts;
   int dataLength = 0;
-  User user = new User(username: "",role: "", id: "");
+  User user = new User(username: "", role: "", id: "");
   _sendMail() async {
     // Android and iOS
     Uri uri = Uri.parse(
@@ -32,11 +32,10 @@ class _MainContactsPageState extends State<MainContactsPage> {
     }
   }
 
-  void getUserData() async{
-      user = await SecureStore.getUser();
-      print(user.username);
-}
-
+  void getUserData() async {
+    user = await SecureStore.getUser();
+    print(user.username);
+  }
 
   Future<List<Contact>> getAllContacts() async {
     var response = await NetworkHandler.get(endpoint: "/contacts");
@@ -55,18 +54,17 @@ class _MainContactsPageState extends State<MainContactsPage> {
     futureContacts = getAllContacts();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder(
         future: futureContacts,
-        builder: (context, snapshot){
-          dataLength = (snapshot.data != null) ? dataLength = snapshot.data!.length : 0;
-          if(snapshot.connectionState == ConnectionState.done){
-            if(snapshot.hasData){
+        builder: (context, snapshot) {
+          dataLength =
+              (snapshot.data != null) ? dataLength = snapshot.data!.length : 0;
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
               return CustomScrollView(
                 slivers: [
                   SliverAppBar(
@@ -81,18 +79,23 @@ class _MainContactsPageState extends State<MainContactsPage> {
                       '${user.username}',
                       style: TextStyle(fontSize: 25),
                     ),
-                    actions:  [
+                    actions: [
                       Padding(
                         padding: EdgeInsets.only(right: 15.0),
                         child: IconButton(
-                            onPressed:(){
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=> ContactDetails())).then((value){
-                                  setState(() {
-                                    futureContacts = getAllContacts();
-                                  });
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ContactDetails())).then((value) {
+                                setState(() {
+                                  futureContacts = getAllContacts();
+                                });
                               });
                             },
-                            icon: Icon(Icons.add_box_rounded,
+                            icon: Icon(
+                              Icons.add_box_rounded,
                               size: 27,
                             )),
                       )
@@ -151,75 +154,125 @@ class _MainContactsPageState extends State<MainContactsPage> {
                           right: 40.0,
                         ),
                         child: ListView.builder(
-                                  padding: const EdgeInsets.only(top: 0, bottom: 20),
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: snapshot.data!.length,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return ListTile(
-                                      dense: true,
-                                      minVerticalPadding: 20,
-                                      visualDensity: const VisualDensity(vertical: 3),
-                                      contentPadding: const EdgeInsets.all(0),
-                                      leading:  CircleAvatar(
-                                          radius: 60,
-                                          backgroundColor: (index % 2 == 0) ? AppColors.mainGreen : AppColors.mainBlue ),
-                                      title: Padding(
-                                        padding: EdgeInsets.only(bottom: 5.0),
-                                        child: Text(
-                                          snapshot.data![index].first_name +
-                                              " " +
-                                              snapshot.data![index].last_name,
-                                          style: TextStyle(fontSize: 18),
+                          padding: const EdgeInsets.only(top: 0, bottom: 20),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Dismissible(
+                              direction: DismissDirection.endToStart,
+                              key: UniqueKey(),
+                              confirmDismiss:
+                                  (DismissDirection direction) async {
+                                return await showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm'),
+                                      content: Text(
+                                          "Are you sure you wish to delete this contact"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: Text('Delete'),
                                         ),
-                                      ),
-                                      subtitle: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(snapshot.data![index].email),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text("${snapshot.data![index].contact_num}"),
-                                        ],
-                                      ),
-                                      trailing: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(
-                                                Icons.call_outlined,
-                                                color: AppColors.mainBlue,
-                                                size: 27,
-                                              ),
-                                              SizedBox(
-                                                  width: 25,
-                                                  height: 25,
-                                                  child: VerticalDivider(
-                                                    color: Colors.black54,
-                                                  )),
-                                              Icon(
-                                                Icons.email_outlined,
-                                                color: AppColors.mainBlue,
-                                                size: 27,
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: Text('Cancel'),
+                                        ),
+                                      ],
                                     );
+                                  },
+                                );
+                              },
+                              background: Container(
+                                alignment: AlignmentDirectional.centerEnd,
+                                color: AppColors.mainRed,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              child: ListTile(
+                                dense: true,
+                                minVerticalPadding: 20,
+                                visualDensity: const VisualDensity(vertical: 3),
+                                contentPadding: const EdgeInsets.all(0),
+                                leading: CircleAvatar(
+                                    radius: 60,
+                                    backgroundColor: (index % 2 == 0)
+                                        ? AppColors.mainGreen
+                                        : AppColors.mainBlue),
+                                title: Padding(
+                                  padding: EdgeInsets.only(bottom: 5.0),
+                                  child: Text(
+                                    snapshot.data![index].first_name +
+                                        " " +
+                                        snapshot.data![index].last_name,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(snapshot.data![index].email),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                        "${snapshot.data![index].contact_num}"),
+                                  ],
+                                ),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 10.0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: const [
+                                          Icon(
+                                            Icons.call_outlined,
+                                            color: Colors.black54,
+                                            size: 27,
+                                          ),
+                                          SizedBox(
+                                              width: 25,
+                                              height: 25,
+                                              child: VerticalDivider(
+                                                color: Colors.black54,
+                                              )),
+                                          Icon(
+                                            Icons.email_outlined,
+                                            color: Colors.black54,
+                                            size: 27,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
                         )),
                   ),
                 ],
               );
-            }else{
+            } else {
               return Text("${snapshot.error}");
             }
-          }else{
-            return Center( child: CircularProgressIndicator(),);
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
         },
       ),
